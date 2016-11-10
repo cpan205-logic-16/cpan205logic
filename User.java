@@ -7,6 +7,7 @@ public class User {
     private String password;
     private UserType userType;
 
+    enum UserType {STUDENT, INSTRUCTOR, ADMIN};
 
     /*
     * All methods return true temporarily
@@ -36,7 +37,7 @@ public class User {
 	*/
     public List<Exam> viewSchedule(ViewScheduleType viewScheduleType) {
         List<Exam> listOfExams;
-        String mQuery;
+        String query;
         switch (viewScheduleType) {
             case PROGRAM:
                 //method from DBclass to retrieve list of exams with specified program
