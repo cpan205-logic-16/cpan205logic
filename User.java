@@ -15,16 +15,52 @@ public class User {
     * */
 
     public boolean signIn(int id, String password) {
-        return true;
+        return (db.loadUser(id).getPassword() == password);
     }
 
     public boolean changePassword(String oldPassword, String newPassword) {
-        return true;
+        //methods from database team to:
+        //get current password
+		//change password, returns true if succeeded
+        if(currentPassword.equals(database.getPassword(id)) && database.updatePassword(id, newPassword)) {
+            password = newPassword;
+            return true;
+        } else
+            return false;
+		}
     }
 
-    public void viewSchedule(ViewScheduleType viewScheduleType, String query) {
-
-    }
+    /*
+	*	Assuming DB team is providing a method to load a schedule based on the type of schedule requested.
+	*	The old verison of this method contained a query param, has been removed as it's not needed. 
+	*/
+	public List<Exam> viewSchedule(ViewScheduleType viewScheduleType) {
+       List<Exam> listOfExams;
+	   String mQuery;
+       switch(viewScheduleType) {
+           case PROGRAM:
+               //method from DBclass to retrieve list of exams with specified program
+              query = "program";
+               break;
+           case ROOM:
+               //method from DBclass to retrieve list of exams with specified room#
+				query = "room";
+               break;
+           case WEEK:
+		   default:
+               //method from DBclass to retrieve list of exams with specified week#
+               query = "week";
+               break;
+           case TEACHER:
+               //method from DBclass to retrieve list of exams with specified teacher
+               query = "teacher";
+               break;
+       }
+	   
+	   listOfExams = db.loadSchedule(mQuery);
+		   
+		   return listOfExams;
+   }
 
     public int getId() {
         return id;
