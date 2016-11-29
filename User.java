@@ -9,6 +9,19 @@ public class User {
 
     enum UserType {STUDENT, INSTRUCTOR, ADMIN};
 
+    public User(int id, String password, UserType userType) {
+        this.id = id;
+        this.password = password;
+        this.userType = userType;
+    }
+
+    public User(int id, String password) {
+        this.id = id;
+        this.password = password;
+    }
+
+    public User() {}
+
     /*
     * All methods return true temporarily
     * for the purpose of testing classes with the other teams (Database, Server, Web)
