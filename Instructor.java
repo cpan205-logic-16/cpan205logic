@@ -10,6 +10,10 @@ public class Instructor extends User{
     public Instructor(int id, String pw, UserType ut) {
         super(id, pw, ut);
     }
+
+    public Instructor(int id, String pw) {
+        super(id, pw, UserType.INSTRUCTOR);
+    }
     
     public int scheduleExam(String room, int startTime, int endTime, String course, boolean isLab, String instructor, Date date){
         
@@ -46,5 +50,13 @@ public class Instructor extends User{
         }
         
         return true;
+    }
+
+    public ReturnResult modifyExam(int id, String newRoom, Date newStartTime, Date newEndTime, Date date) {
+        ReturnResult result = new ReturnResult(true, "Success: Exam modified successfully." );
+        if (!db.modifyExam(id, newRoom, newStartTime, newEndTime, date)) {
+            result.setSuccess(false);
+            result.setMessage("Error: Exam could not be modified.");
+        }
     }
 }

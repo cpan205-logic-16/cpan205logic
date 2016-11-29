@@ -2,7 +2,10 @@
 
 public class Admin extends Instructor {
 
-    public Admin(){    
+
+
+    public Admin(int id, String password){
+        super(id, password, UserType.ADMIN);
     }
 
     /**
@@ -64,13 +67,6 @@ public class Admin extends Instructor {
         return result;
 	}
 
-	public ReturnResult modifyExam() {
 
-    }
-
-
-    public int generateId(){
-        return 0;
-    }
     
 }

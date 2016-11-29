@@ -18,9 +18,11 @@ public class User {
     public User(int id, String password) {
         this.id = id;
         this.password = password;
+        this.userType = UserType.STUDENT;
     }
 
     public User() {}
+
 
     /*
     * All methods return true temporarily
@@ -28,7 +30,13 @@ public class User {
     *
     * */
 
-    public boolean signIn(int id, String password) {
+    /**
+     *
+     * @param id user to sign in
+     * @param password password for user to verify
+     * @return true/false for successful signIn
+     */
+    public static boolean signIn(int id, String password) {
         return (db.loadUser(id).getPassword().equals(password));
     }
 
