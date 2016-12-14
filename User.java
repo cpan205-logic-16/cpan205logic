@@ -1,3 +1,10 @@
+package logic;
+
+import database.tables.DBUser;
+
+import java.sql.SQLException;
+import java.util.List;
+
 /**
  * Created by Petar on 10/19/2016.
  */
@@ -6,8 +13,9 @@ public class User {
     private int id;
     private String password;
     private UserType userType;
+    private User validatedUser;
 
-    enum UserType {STUDENT, INSTRUCTOR, ADMIN};
+    public enum UserType {STUDENT, INSTRUCTOR, ADMIN};
 
     public User(int id, String password, UserType userType) {
         this.id = id;
@@ -18,69 +26,93 @@ public class User {
     public User(int id, String password) {
         this.id = id;
         this.password = password;
-        this.userType = UserType.STUDENT;
+    }
+
+    public User(int id) {
+        this.id = id;
+
     }
 
     public User() {}
 
-
-    /*
-    * All methods return true temporarily
-    * for the purpose of testing classes with the other teams (Database, Server, Web)
-    *
-    * */
-
     /**
-     *
-     * @param id user to sign in
-     * @param password password for user to verify
-     * @return true/false for successful signIn
+     * Provides user validation. Perhaps this should return a User object instead?
+     * @param password password to verify with
+     * @return true/false if the user was validated
      */
-    public static boolean signIn(int id, String password) {
-        return (db.loadUser(id).getPassword().equals(password));
+    public ReturnResult signIn(String password) {
+        ReturnResult result = new ReturnResult(false, "ERROR: Invalid password.");
+        try {
+            User user = DBUser.loadUser(id);
+            if (user.getPassword().equals(password)) {
+                setValidatedUser(user);
+                result.setSuccess(true);
+                result.setMessage("SUCCESS: User validated.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result.setMessage("ERROR: Database error(" + e.getMessage()+")");
+        }
+        return result;
     }
 
-    public boolean changePassword(String oldPassword, String newPassword) {
-        //methods from database team to:
-        //get current password
-        //change password, returns true if succeeded
-        if (currentPassword.equals(database.getPassword(id)) && database.updatePassword(id, newPassword)) {
-            password = newPassword;
-            return true;
-        } else {
-            return false;
+    public User loadValidatedUser() {
+        return validatedUser;
+    }
+
+    private void setValidatedUser(User user) {
+        this.validatedUser = user;
+    }
+
+//    public boolean signIn(int id, String password) {
+//        //return (db.loadUser(id).getPassword().equals(password));
+//    }
+
+    public ReturnResult changePassword(String oldPassword, String newPassword) {
+        ReturnResult result = new ReturnResult(false, "ERROR: Old password did not match");
+        DBUser dbUser = new DBUser();
+        try {
+            if (oldPassword.equals(getPassword()) && dbUser.updatePassword(getId(), newPassword) > 0) {
+                setPassword(newPassword);
+                result.setSuccess(true);
+                result.setMessage("SUCCESS: Password changed successfully");
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            result.setMessage("ERROR: Database error(" + e.getMessage()+")");
         }
+        return result;
     }
 
     /*
     *	Assuming DB team is providing a method to load a schedule based on the type of schedule requested.
 	*	The old verison of this method contained a query param, has been removed as it's not needed. 
 	*/
-    public List<Exam> viewSchedule(ViewScheduleType viewScheduleType) {
-        List<Exam> listOfExams;
+    public List<Exam> viewSchedule(ViewScheduleType viewScheduleType){
+        List<Exam> listOfExams = null;
         String query;
         switch (viewScheduleType) {
             case PROGRAM:
-                //method from DBclass to retrieve list of exams with specified program
                 query = "program";
                 break;
             case ROOM:
-                //method from DBclass to retrieve list of exams with specified room#
                 query = "room";
                 break;
             case WEEK:
             default:
-                //method from DBclass to retrieve list of exams with specified week#
                 query = "week";
                 break;
             case TEACHER:
-                //method from DBclass to retrieve list of exams with specified teacher
                 query = "teacher";
                 break;
         }
 
-
-        listOfExams = db.loadSchedule(mQuery);
+        DBUser dbUser = new DBUser();
+        try {
+            listOfExams = dbUser.viewSchedule(query);
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
 
         return listOfExams;
     }
@@ -107,5 +139,13 @@ public class User {
 
     public void setUserType(UserType userType) {
         this.userType = userType;
+    }
+
+    public void setIdAsStr(String id) {
+        setId(Integer.parseInt(id));
+    }
+
+    public void setUserTypeAsStr(String userType) {
+        setUserType(UserType.valueOf(userType.toUpperCase()));
     }
 }

@@ -1,3 +1,4 @@
+package logic;
 /**
  * Created by petar on 28/11/16.
  */

@@ -1,6 +1,8 @@
 
 package ooadass1;
 
+import logic.Exam;
+
 import java.util.*;
 
 /**
