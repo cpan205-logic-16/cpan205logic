@@ -11,11 +11,18 @@ import java.util.List;
 public class User {
 
     private int id;
+    private String userName;
     private String password;
     private UserType userType;
     private User validatedUser;
 
     public enum UserType {STUDENT, INSTRUCTOR, ADMIN};
+
+    public User(String userName, String password, UserType userType) {
+        this.userName = userName;
+        this.password = password;
+        this.userType = userType;
+    }
 
     public User(int id, String password, UserType userType) {
         this.id = id;
@@ -43,7 +50,8 @@ public class User {
     public ReturnResult signIn(String password) {
         ReturnResult result = new ReturnResult(false, "ERROR: Invalid password.");
         try {
-            User user = DBUser.loadUser(id);
+            //User user = DBUser.loadUser(id);
+            User user = DBUser.loadUser(userName);
             if (user.getPassword().equals(password)) {
                 setValidatedUser(user);
                 result.setSuccess(true);
@@ -88,28 +96,28 @@ public class User {
     *	Assuming DB team is providing a method to load a schedule based on the type of schedule requested.
 	*	The old verison of this method contained a query param, has been removed as it's not needed. 
 	*/
-    public List<Exam> viewSchedule(ViewScheduleType viewScheduleType){
+    public List<Exam> viewSchedule(ViewScheduleType viewScheduleType, String search){
         List<Exam> listOfExams = null;
         String query;
         switch (viewScheduleType) {
             case PROGRAM:
-                query = "program";
+                query = "PROGRAM";
                 break;
             case ROOM:
-                query = "room";
+                query = "ROOM_NO";
                 break;
             case WEEK:
             default:
                 query = "week";
                 break;
             case TEACHER:
-                query = "teacher";
+                query = "INSTRUCTOR";
                 break;
         }
 
         DBUser dbUser = new DBUser();
         try {
-            listOfExams = dbUser.viewSchedule(query);
+            listOfExams = dbUser.viewSchedule(query, search);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
@@ -141,9 +149,9 @@ public class User {
         this.userType = userType;
     }
 
-    public void setIdAsStr(String id) {
-        setId(Integer.parseInt(id));
-    }
+    public void setUserName(String userName) {this.userName = userName;}
+
+    public String getUserName() {return userName;}
 
     public void setUserTypeAsStr(String userType) {
         setUserType(UserType.valueOf(userType.toUpperCase()));

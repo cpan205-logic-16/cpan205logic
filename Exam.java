@@ -56,7 +56,7 @@ public class Exam {
     }
 
     public void setLabAsStr(String isLab) {
-        setLab((isLab.equalsIgnoreCase("Yes")));
+        setLab((isLab.equalsIgnoreCase("Y")));
     }
 
     public Date getDate() {
