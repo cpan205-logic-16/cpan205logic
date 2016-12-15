@@ -1,6 +1,7 @@
 package logic;
 
 import database.tables.DBAdmin;
+import database.tables.DBExam;
 import database.tables.DBUser;
 
 import java.sql.SQLException;
@@ -104,9 +105,30 @@ public class Admin extends Instructor {
         return result;
 	}
 
-	public ReturnResult modifyExam() {
-        ReturnResult result = new ReturnResult(true, "SUCCESS: Exam successfully modified");
+	/*
+	* String course, String instructor, String date, String startTime,
+                                     String endTime, String room, String program, boolean isLab
+	*
+	* */
 
+	public ReturnResult modifyExam(int examId, String course, String instructor, String date, String startTime,
+                                   String endTime, String room, String program, boolean isLab) {
+        ReturnResult result = super.checkAvail(room, startTime, endTime, date, isLab);
+        if (result.isSuccess()) {
+            DBExam dbExam = new DBExam();
+            try {
+                if (dbExam.updateExam(String.valueOf(examId), course, instructor, date, startTime, endTime, room, program) > 0) {
+                    result.setSuccess(true);
+                    result.setMessage("SUCCESS: Exam modified successfully! Exam ID: " + examId);
+                } else {
+                    result.setSuccess(false);
+                    result.setMessage("FAIL: Unable to modify exam. Exam ID: " + examId);
+                }
+            } catch (SQLException e) {
+                result.setSuccess(false);
+                result.setMessage("SQL-ERROR: " + e.getMessage());
+            }
+        }
 
         return result;
     }
